@@ -1,25 +1,24 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-// import { getToken } from '../services/LocalStorageService';
-import logo from '../assets/react.svg';
+import { getToken } from '../services/LocalStorageService';
+import logo from '../assets/logoupdatedd1.webp';
 
-const Header = () => {
-  // const { access_token } = getToken();
+const Navbar = () => {
+  const { access_token } = getToken();
 
   return (
     <div className="mx-auto w-full">
-      <nav className="shadow-lg bg-gradient-to-r from-gray-800 to-gray-700">
+      <nav className="bg-purple-700 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo Section */}
-            <div className="flex items-center" style={{ paddingTop: '5px' }}> {/* Add paddingTop or marginTop */}
+            <div className="flex items-center" style={{ paddingTop: '28px' }}> {/* Add paddingTop or marginTop */}
               <img 
                 src={logo} 
                 alt="Logo" 
-                height={20}
-                width={50}
-                // className=" object-contain mr-3" // Increased image size here
-                className=" object-contain mr-3 animate-spin-slow" // Increased image size here
+                height={130}
+                width={130}
+                className=" object-contain mr-3" // Increased image size here
               />
             </div>
 
@@ -58,7 +57,7 @@ const Header = () => {
                 Predictors
               </NavLink>
 
-              {/* {access_token ? ( */}
+              {access_token ? (
                 <NavLink
                   to="/dashboard"
                   className={({ isActive }) =>
@@ -69,7 +68,7 @@ const Header = () => {
                 >
                   Dashboard
                 </NavLink>
-              {/* ) : ( */}
+              ) : (
                 <NavLink
                   to="/login"
                   className={({ isActive }) =>
@@ -80,7 +79,7 @@ const Header = () => {
                 >
                   Login/Registration
                 </NavLink>
-              {/* ) */}
+              )}
             </div>
 
             {/* Mobile Menu Button */}
@@ -141,7 +140,7 @@ const Header = () => {
               Predictors
             </NavLink>
 
-            {/* {access_token ? ( */}
+            {access_token ? (
               <NavLink
                 to="/dashboard"
                 className={({ isActive }) =>
@@ -152,7 +151,7 @@ const Header = () => {
               >
                 Dashboard
               </NavLink>
-            {/* ) : ( */}
+            ) : (
               <NavLink
                 to="/login"
                 className={({ isActive }) =>
@@ -163,7 +162,7 @@ const Header = () => {
               >
                 Login/Registration
               </NavLink>
-            {/* )} */}
+            )}
           </div>
         </div>
       </nav>
@@ -171,4 +170,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default Navbar;
