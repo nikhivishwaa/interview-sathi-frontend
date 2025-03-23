@@ -6,7 +6,7 @@ import github from '../assets/github.png';
 
 const Footer = () => {
   return (
-    <div className="h-full bg-gradient-to-r from-gray-900 to-gray-700 px-6 sm:px-8 md:px-20 py-12 md:py-20 border-t border-[#F7F7F821] text-center md:text-left font-plusJakartaSans text-white">
+    <div className="h-full bg-gradient-to-r from-blue-950 to-gray-800 px-6 sm:px-8 md:px-20 py-12 md:py-20 border-t border-[#F7F7F821] text-center md:text-left font-plusJakartaSans text-white">
       <div className="md:flex md:justify-between md:items-start">
         {/* Left Section */}
         <div className="w-full md:w-1/2 mb-8 md:mb-0">

@@ -11,7 +11,7 @@ const Header = () => {
 
   return (
     <div className="mx-auto w-full">
-      <nav className="shadow-lg bg-gradient-to-r from-gray-800 to-gray-700">
+      <nav className="shadow-lg bg-gradient-to-r from-blue-950 to-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center pt-1">
@@ -48,25 +48,25 @@ const Header = () => {
               </NavLink>
 
               <NavLink
-                to="/prediction-list"
+                to="/not-found"
                 className={({ isActive }) =>
                   isActive
                     ? 'bg-purple-800 text-white px-4 py-2 rounded-md text-sm font-medium'
                     : 'text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium transition duration-300'
                 }
               >
-                Predictors
+                Not-Found
               </NavLink>
 
               <NavLink
-                to="/dashboard"
+                to="/AI-Interviewer"
                 className={({ isActive }) =>
                   isActive
                     ? 'bg-purple-800 text-white px-4 py-2 rounded-md text-sm font-medium'
                     : 'text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium transition duration-300'
                 }
               >
-                Dashboard
+                AI-Interviewer
               </NavLink>
 
               <NavLink
@@ -130,7 +130,7 @@ const Header = () => {
               </NavLink>
 
               <NavLink
-                to="/prediction-list"
+                to="/not-found"
                 onClick={toggleMenu}
                 className={({ isActive }) =>
                   isActive
@@ -138,11 +138,11 @@ const Header = () => {
                     : 'text-white hover:bg-blue-700 block px-3 py-2 rounded-md text-base font-medium transition duration-300'
                 }
               >
-                Predictors
+                Not-Found
               </NavLink>
 
               <NavLink
-                to="/dashboard"
+                to="/AI-Interviewer"
                 onClick={toggleMenu}
                 className={({ isActive }) =>
                   isActive
@@ -150,7 +150,7 @@ const Header = () => {
                     : 'text-white hover:bg-blue-700 block px-3 py-2 rounded-md text-base font-medium transition duration-300'
                 }
               >
-                Dashboard
+                AI-Interviewer
               </NavLink>
 
               <NavLink
