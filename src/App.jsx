@@ -4,7 +4,7 @@ import Header from './components/Header'
 import Footer from './components/Footer'
 import Contact from './components/Contact';
 import Dashboard from './components/Dashboard';
-import LoginReg from './components/LoginReq';
+import LoginReg from './screens/LoginReq';
 import NotFound from './components/NotFound';
 import Home from './components/Home';
 function App() {

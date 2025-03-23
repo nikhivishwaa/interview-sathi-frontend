@@ -1,30 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-// import { getToken } from '../services/LocalStorageService';
 import logo from '../assets/react.svg';
 
 const Header = () => {
-  // const { access_token } = getToken();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
 
   return (
     <div className="mx-auto w-full">
       <nav className="shadow-lg bg-gradient-to-r from-gray-800 to-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo Section */}
-            <div className="flex items-center" style={{ paddingTop: '5px' }}> {/* Add paddingTop or marginTop */}
+            <div className="flex items-center pt-1">
               <img 
                 src={logo} 
                 alt="Logo" 
                 height={20}
                 width={50}
-                // className=" object-contain mr-3" // Increased image size here
-                className=" object-contain mr-3 animate-spin-slow" // Increased image size here
+                className="object-contain mr-3 animate-spin-slow"
               />
             </div>
 
-            {/* Navigation Links */}
-            <div className="hidden md:flex space-x-2"> {/* Reduced space between items */}
+            <div className="hidden md:flex space-x-2">
               <NavLink
                 to="/"
                 className={({ isActive }) =>
@@ -58,34 +58,31 @@ const Header = () => {
                 Predictors
               </NavLink>
 
-              {/* {access_token ? ( */}
-                <NavLink
-                  to="/dashboard"
-                  className={({ isActive }) =>
-                    isActive
-                      ? 'bg-purple-800 text-white px-4 py-2 rounded-md text-sm font-medium'
-                      : 'text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium transition duration-300'
-                  }
-                >
-                  Dashboard
-                </NavLink>
-              {/* ) : ( */}
-                <NavLink
-                  to="/login"
-                  className={({ isActive }) =>
-                    isActive
-                      ? 'bg-purple-800 text-white px-4 py-2 rounded-md text-sm font-medium'
-                      : 'text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium transition duration-300'
-                  }
-                >
-                  Login/Registration
-                </NavLink>
-              {/* ) */}
+              <NavLink
+                to="/dashboard"
+                className={({ isActive }) =>
+                  isActive
+                    ? 'bg-purple-800 text-white px-4 py-2 rounded-md text-sm font-medium'
+                    : 'text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium transition duration-300'
+                }
+              >
+                Dashboard
+              </NavLink>
+
+              <NavLink
+                to="/login"
+                className={({ isActive }) =>
+                  isActive
+                    ? 'bg-purple-800 text-white px-4 py-2 rounded-md text-sm font-medium'
+                    : 'text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium transition duration-300'
+                }
+              >
+                Login/Registration
+              </NavLink>
             </div>
 
-            {/* Mobile Menu Button */}
             <div className="md:hidden flex items-center">
-              <button className="text-white hover:text-gray-300 focus:outline-none focus:text-gray-300">
+              <button onClick={toggleMenu} className="text-white hover:text-gray-300 focus:outline-none focus:text-gray-300">
                 <svg
                   className="h-6 w-6"
                   fill="none"
@@ -97,7 +94,7 @@ const Header = () => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth="2"
-                    d="M4 6h16M4 12h16m-7 6h7"
+                    d={isOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16m-7 6h7'}
                   />
                 </svg>
               </button>
@@ -105,45 +102,48 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile Nav Links */}
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                isActive
-                  ? 'bg-purple-800 text-white block px-3 py-2 rounded-md text-base font-medium'
-                  : 'text-white hover:bg-blue-700 block px-3 py-2 rounded-md text-base font-medium transition duration-300'
-              }
-            >
-              Home
-            </NavLink>
+        {isOpen && (
+          <div className="md:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+              <NavLink
+                to="/"
+                onClick={toggleMenu}
+                className={({ isActive }) =>
+                  isActive
+                    ? 'bg-purple-800 text-white block px-3 py-2 rounded-md text-base font-medium'
+                    : 'text-white hover:bg-blue-700 block px-3 py-2 rounded-md text-base font-medium transition duration-300'
+                }
+              >
+                Home
+              </NavLink>
 
-            <NavLink
-              to="/contact"
-              className={({ isActive }) =>
-                isActive
-                  ? 'bg-purple-800 text-white block px-3 py-2 rounded-md text-base font-medium'
-                  : 'text-white hover:bg-blue-700 block px-3 py-2 rounded-md text-base font-medium transition duration-300'
-              }
-            >
-              Contact
-            </NavLink>
+              <NavLink
+                to="/contact"
+                onClick={toggleMenu}
+                className={({ isActive }) =>
+                  isActive
+                    ? 'bg-purple-800 text-white block px-3 py-2 rounded-md text-base font-medium'
+                    : 'text-white hover:bg-blue-700 block px-3 py-2 rounded-md text-base font-medium transition duration-300'
+                }
+              >
+                Contact
+              </NavLink>
 
-            <NavLink
-              to="/prediction-list"
-              className={({ isActive }) =>
-                isActive
-                  ? 'bg-purple-800 text-white block px-3 py-2 rounded-md text-base font-medium'
-                  : 'text-white hover:bg-blue-700 block px-3 py-2 rounded-md text-base font-medium transition duration-300'
-              }
-            >
-              Predictors
-            </NavLink>
+              <NavLink
+                to="/prediction-list"
+                onClick={toggleMenu}
+                className={({ isActive }) =>
+                  isActive
+                    ? 'bg-purple-800 text-white block px-3 py-2 rounded-md text-base font-medium'
+                    : 'text-white hover:bg-blue-700 block px-3 py-2 rounded-md text-base font-medium transition duration-300'
+                }
+              >
+                Predictors
+              </NavLink>
 
-            {/* {access_token ? ( */}
               <NavLink
                 to="/dashboard"
+                onClick={toggleMenu}
                 className={({ isActive }) =>
                   isActive
                     ? 'bg-purple-800 text-white block px-3 py-2 rounded-md text-base font-medium'
@@ -152,9 +152,10 @@ const Header = () => {
               >
                 Dashboard
               </NavLink>
-            {/* ) : ( */}
+
               <NavLink
                 to="/login"
+                onClick={toggleMenu}
                 className={({ isActive }) =>
                   isActive
                     ? 'bg-purple-800 text-white block px-3 py-2 rounded-md text-base font-medium'
@@ -163,9 +164,9 @@ const Header = () => {
               >
                 Login/Registration
               </NavLink>
-            {/* )} */}
+            </div>
           </div>
-        </div>
+        )}
       </nav>
     </div>
   );

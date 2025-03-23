@@ -14,8 +14,6 @@ const Registration = () => {
       password2: data.get("password2"),
       tc: data.get("tc"),
     };
-
-   
   };
 
   return (
