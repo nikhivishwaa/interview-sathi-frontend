@@ -33,7 +33,7 @@ const Header = () => {
                     : 'text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium transition duration-300'
                 }
               >
-                Home
+                Dashboard
               </NavLink>
 
               <NavLink
@@ -114,7 +114,7 @@ const Header = () => {
                     : 'text-white hover:bg-blue-700 block px-3 py-2 rounded-md text-base font-medium transition duration-300'
                 }
               >
-                Home
+                Dashboard
               </NavLink>
 
               <NavLink

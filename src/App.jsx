@@ -6,7 +6,7 @@ import Contact from './components/Contact';
 import AI_Interviewer from './components/AI_Interviewer';
 import LoginReg from './screens/LoginReq';
 import NotFound from './components/NotFound';
-import Home from './components/Home';
+import Dashboard from './components/Dashboard';
 
 
 function App() {
@@ -20,10 +20,11 @@ function App() {
 
       <div className="overflow-hidden">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Dashboard />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/AI-Interviewer" element={<AI_Interviewer />} />
           <Route path="/login" element={<LoginReg />} />
+          <Route path="/dashboard" element={<Dashboard />} />
 
           {/* Or use a Not Found Page */}
           <Route path="*" element={<NotFound />} />
