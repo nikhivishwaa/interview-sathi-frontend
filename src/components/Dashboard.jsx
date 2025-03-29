@@ -45,8 +45,15 @@ export default function Dashboard() {
           </button>
           <h2 className="text-lg font-semibold">My Interviews</h2>
           <div className="flex items-center space-x-3">
-            <span className="text-gray-700">Nikhlesh Shukla</span>
-            <img src="https://via.placeholder.com/40" className="w-10 h-10 rounded-full" alt="User" />
+            <span className="text-gray-700">John Doe</span>
+            {/* <img src="https://via.placeholder.com/40" className="w-10 h-10 rounded-full" alt="User" /> */}
+
+            <img
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTR2thNrvhfUKHJQ4EY8bfciWT5jJ4Aakhedw&s"
+              className="w-10 h-10 rounded-full"
+              alt="AI Chat Avatar"
+            />
+
           </div>
         </div>
 
@@ -66,7 +73,58 @@ export default function Dashboard() {
             </thead>
             <tbody>
               <tr className="border-b hover:bg-gray-100">
-                <td className="p-3">AI Engineer</td>
+                <td className="p-3">Software Engineer</td>
+                <td className="p-3">NA</td>
+                <td className="p-3 text-blue-500 cursor-pointer hover:underline">View JD</td>
+                <td className="p-3 text-blue-500 cursor-pointer hover:underline">View Resume</td>
+                <td className="p-3">March 27, 2025</td>
+                <td className="p-3">
+                  <span className="px-2 py-1 bg-gray-300 text-gray-700 rounded">Draft</span>
+                </td>
+                <td className="p-3">
+                  <Link to="/AI-Interviewer">
+                    <button className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-700">
+                      Start Now
+                    </button>
+                  </Link>
+                </td>
+              </tr>
+              <tr className="border-b hover:bg-gray-100">
+                <td className="p-3">ML Engineer</td>
+                <td className="p-3">NA</td>
+                <td className="p-3 text-blue-500 cursor-pointer hover:underline">View JD</td>
+                <td className="p-3 text-blue-500 cursor-pointer hover:underline">View Resume</td>
+                <td className="p-3">March 27, 2025</td>
+                <td className="p-3">
+                  <span className="px-2 py-1 bg-gray-300 text-gray-700 rounded">Draft</span>
+                </td>
+                <td className="p-3">
+                  <Link to="/AI-Interviewer">
+                    <button className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-700">
+                      Start Now
+                    </button>
+                  </Link>
+                </td>
+              </tr>
+              <tr className="border-b hover:bg-gray-100">
+                <td className="p-3">DL Engineer</td>
+                <td className="p-3">NA</td>
+                <td className="p-3 text-blue-500 cursor-pointer hover:underline">View JD</td>
+                <td className="p-3 text-blue-500 cursor-pointer hover:underline">View Resume</td>
+                <td className="p-3">March 27, 2025</td>
+                <td className="p-3">
+                  <span className="px-2 py-1 bg-gray-300 text-gray-700 rounded">Draft</span>
+                </td>
+                <td className="p-3">
+                  <Link to="/AI-Interviewer">
+                    <button className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-700">
+                      Start Now
+                    </button>
+                  </Link>
+                </td>
+              </tr>
+              <tr className="border-b hover:bg-gray-100">
+                <td className="p-3">IOT Engineer</td>
                 <td className="p-3">NA</td>
                 <td className="p-3 text-blue-500 cursor-pointer hover:underline">View JD</td>
                 <td className="p-3 text-blue-500 cursor-pointer hover:underline">View Resume</td>

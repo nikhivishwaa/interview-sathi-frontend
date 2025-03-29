@@ -29,7 +29,7 @@ const AI_Interviewer = () => {
   }, []);
 
   const startSpeaking = () => {
-    const aiQuestion = 'Tell me about yourself. and my name is Ankush Gupta';
+    const aiQuestion = 'Tell me about yourself.';
     setAiText(aiQuestion);
     speakText(aiQuestion);
     startListening();
