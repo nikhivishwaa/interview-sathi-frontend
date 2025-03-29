@@ -17,11 +17,11 @@ const LoginReg = () => {
 
   return (
     <>
-    {/* <div 
+      {/* <div 
         className="flex flex-col justify-between min-h-screen bg-cover bg-center" 
         
       ></div> */}
-      <div className='flex flex-col  justify-between bg-gradient-to-r from-gray-300 to-gray-200' >
+      <div className='flex flex-col h-[calc(100vh-4rem)] justify-between bg-gradient-to-r from-gray-300 to-gray-200' >
         <div className='flex flex-wrap w-full min-h-[670px]'>
           {/* Left Side - Image */}
 
@@ -57,11 +57,11 @@ const LoginReg = () => {
             style={{ backgroundImage: `url(${LoginRagistrationImage})` }}>
           </div> */}
 
-          <div className="hidden md:flex md:w-1/2 pt-24 justify-center bg-gray-100 rounded-l-lg">
+          <div className="hidden md:flex md:w-1/2 justify-center bg-gray-100 rounded-l-lg">
             <img
               src={LoginRagistrationImage}
               alt="Login Registration"
-              className="w-90 h-90 animate-spin-slow"
+              className="w-60 animate-spin-slow" // Adjust width and height
             />
           </div>
 
