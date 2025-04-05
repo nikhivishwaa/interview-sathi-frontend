@@ -2,8 +2,9 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import axios from 'axios';
+import secureLocalStorage from 'react-secure-storage';
 
-const API_URL = import.meta.env.VITE_BACKEND || 'http://localhost:8000';
+const API = import.meta.env.VITE_BACKEND || 'http://localhost:8000';
 
 const AuthContext = createContext(undefined);
 
@@ -14,7 +15,7 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+    const storedUser = secureLocalStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
@@ -24,19 +25,20 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(undefined);
     try {
-      const response = await axios.post(`${API_URL}/api/token/`, { email, password });
-      const { access, refresh } = response.data;
-      localStorage.setItem('token', access);
-      localStorage.setItem('refresh_token', refresh);
+      const response = await axios.post(`${API}/users/login/`, { email, password });
+      const { access, refresh, user } = response.data.data;
+      secureLocalStorage.setItem('token', access);
+      secureLocalStorage.setItem('refresh_token', refresh);
 
-      const userResponse = await axios.get(`${API_URL}/users/me/`, {
-        headers: { Authorization: `Bearer ${access}` },
-      });
+      // const userResponse = await axios.get(`${API}/users/profile/`, {
+      //   headers: { Authorization: `Bearer ${access}` },
+      // });
 
-      const userData = userResponse.data;
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
-      toast.success(`Welcome back, ${userData.firstName}!`);
+      // const userData = userResponse.data.d;
+      // setUser(userData);
+      setUser(user);
+      secureLocalStorage.setItem('user', JSON.stringify(user));
+      toast.success(`Welcome back, ${user.first_name}!`);
       navigate('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
@@ -67,8 +69,8 @@ export const AuthProvider = ({ children }) => {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       setUser(demoUser);
-      localStorage.setItem('user', JSON.stringify(demoUser));
-      localStorage.setItem('token', 'demo-token');
+      secureLocalStorage.setItem('user', JSON.stringify(demoUser));
+      secureLocalStorage.setItem('token', 'demo-token');
       toast.success(`Welcome, ${demoUser.firstName}!`);
       navigate('/dashboard');
     } catch (error) {
@@ -85,7 +87,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(undefined);
     try {
-      await axios.post(`${API_URL}/users/register/`, userData);
+      await axios.post(`${API}/users/signup/`, userData);
       toast.success('Registration successful! Please log in.');
       navigate('/login');
     } catch (error) {
@@ -100,9 +102,9 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    localStorage.removeItem('refresh_token');
+    secureLocalStorage.removeItem('user');
+    secureLocalStorage.removeItem('token');
+    secureLocalStorage.removeItem('refresh_token');
     toast.success('Logged out successfully!');
     navigate('/login');
   };
@@ -111,7 +113,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(undefined);
     try {
-      await axios.post(`${API_URL}/users/password/reset/`, { email });
+      await axios.post(`${API}/users/password/reset/`, { email });
       toast.success('Password reset email sent!');
     } catch (error) {
       console.error('Forgot password error:', error);
@@ -127,7 +129,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(undefined);
     try {
-      await axios.post(`${API_URL}/users/password/reset/confirm/`, { token, password });
+      await axios.post(`${API}/users/password/reset/confirm/`, { token, password });
       toast.success('Password reset successful! Please log in.');
       navigate('/login');
     } catch (error) {
