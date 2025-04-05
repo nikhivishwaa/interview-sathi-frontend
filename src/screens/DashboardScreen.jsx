@@ -5,7 +5,7 @@ function DashboardScreen() {
   return (
     <div>
       <Header/>
-      <h1>Dashboard Screen</h1>
+      <h1 className='text-red-500'>Dashboard Screen</h1>
     </div>
   )
 }
