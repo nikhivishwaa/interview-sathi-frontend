@@ -7,6 +7,9 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
 
+// Added by nikhlesh
+// import Index from "./pages/Index"; 
+
 import Index from "./screens/Index";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
