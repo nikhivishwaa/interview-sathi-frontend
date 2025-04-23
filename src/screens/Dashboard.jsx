@@ -6,12 +6,13 @@ import UpcomingInterviews from '../components/dashboard/UpcomingInterviews';
 import RecentFeedback from '../components/dashboard/RecentFeedback';
 import ResumeUpload from '../components/resume/ResumeUpload';
 import { useAuth } from '../context/AuthContext';
+import { useInterview } from '../context/InterviewContext';
 import { getInterviews, cancelInterview } from '../api/api';
 import { toast } from 'sonner';
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const [interviews, setInterviews] = useState([]);
+  const {interviews, getInterviews} = useInterview();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,7 +23,6 @@ const Dashboard = () => {
     try {
       setLoading(true);
       const data = await getInterviews();
-      setInterviews(data);
     } catch (error) {
       console.error('Error fetching interviews:', error);
       toast.error('Failed to load your interviews');
