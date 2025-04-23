@@ -5,31 +5,31 @@ import secureLocalStorage from "react-secure-storage";
 import { toast } from "sonner";
 
 const Header = () => {
-  const { initiateAuthConfirmation, user, logout } = useAuth();
+  const { initiateAuthConfirmation, user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
   
 
   return (
-    <header className="bg-white border-b border-gray-200 shadow-sm">
+    <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <span className="flex justify-center items-center gap-3">
-            <Link to="/dashboard">
+            <Link to={isAuthenticated?"/dashboard":'/'}>
               <img
                 src="/logo.png"
                 alt="Logo"
                 className="mx-auto h-8 w-auto rounded-lg border-1 border-[#ecedee]"
               />
             </Link>
-            <Link to="/dashboard">
+            <Link to={isAuthenticated?"/dashboard":'/'}>
               <h1 className="text-2xl font-bold text-sathi-primary">
                 Interview Sathi
               </h1>
             </Link>
           </span>
           <nav className="hidden md:flex items-center space-x-8">
-            {user ? (
+            {isAuthenticated ? (
               <>
                 <Link
                   to="/dashboard"
