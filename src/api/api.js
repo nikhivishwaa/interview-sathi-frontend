@@ -1,10 +1,11 @@
 import axios from 'axios';
+import secureLocalStorage from 'react-secure-storage';
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND || 'http://localhost:8000';
 
 // Helper function to get authorization header
 const getAuthHeader = () => {
-  const token = localStorage.getItem('token');
+  const token = secureLocalStorage.getItem('token');
   return {
     Authorization: `Bearer ${token}`,
     'Content-Type': 'application/json'
@@ -39,11 +40,11 @@ export const cancelInterview = async (id) => {
 // Resume related API calls
 export const uploadResume = async (file) => {
   const formData = new FormData();
-  formData.append('file', file);
+  formData.append('resume', file);
 
-  const token = localStorage.getItem('token');
+  const token = secureLocalStorage.getItem('token');
 
-  const response = await axios.post(`${API_BASE_URL}/resumes/upload/`, formData, {
+  const response = await axios.post(`${API_BASE_URL}/resumes/`, formData, {
     headers: {
       Authorization: `Bearer ${token}`
     }
@@ -56,7 +57,7 @@ export const getResumes = async () => {
   const response = await axios.get(`${API_BASE_URL}/resumes/`, {
     headers: getAuthHeader()
   });
-  return response.data;
+  return response.data?.data;
 };
 
 // Interview session related API calls
