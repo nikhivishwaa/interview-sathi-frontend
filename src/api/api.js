@@ -21,7 +21,7 @@ export const getInterviews = async () => {
 };
 
 export const scheduleInterview = async (date, time, jobRole) => {
-  const response = await axios.post(`${API_BASE_URL}/interviews/schedule/`, {
+  const response = await axios.post(`${API_BASE_URL}/interviews/`, {
     date,
     time,
     job_role: jobRole

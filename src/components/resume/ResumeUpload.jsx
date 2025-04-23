@@ -1,13 +1,24 @@
 import React, { useState, useRef, useEffect } from "react";
 import { uploadResume, getResumes } from "../../api/api";
 import { toast } from "sonner";
+import { useInterview } from "../../context/InterviewContext";
+import CustomModal from "../modals/CustomModal";
+import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
+import secureLocalStorage from "react-secure-storage";
 
+const API = import.meta.env.VITE_BACKEND;
 const ResumeUpload = () => {
   const [file, setFile] = useState(null);
-  const [resumes, setResumes] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
   const fileInputRef = useRef(null);
+  const { resumes, getResumes, setResumes } = useInterview();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditingEnabled, setIsEditingEnabled] = useState(false);
+  const [newName, setNewName] = useState(false);
+  const selectedResume = useRef(null);
+  const { token } = useAuth();
 
   useEffect(() => {
     fetchResumes();
@@ -17,7 +28,6 @@ const ResumeUpload = () => {
     try {
       setLoading(true);
       const data = await getResumes();
-      setResumes(data);
     } catch (error) {
       console.error("Error fetching resumes:", error);
       toast.error("Failed to load your resumes");
@@ -68,6 +78,41 @@ const ResumeUpload = () => {
       toast.error("Failed to upload resume");
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleRenameResume = async (resume_id, name) => {
+    try {
+      setIsEditingEnabled(false);
+      const response = await axios.put(
+        `${API}/resumes/${resume_id}/`,
+        {
+          name,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.status === 202) {
+        toast.success("Resume renamed successfully");
+        const updatedResume = resumes.map((resume) => {
+          if (resume.id === resume_id) {
+            return response.data?.data;
+          } else return resume;
+        });
+        setResumes(updatedResume);
+        secureLocalStorage.setItem("resumes", JSON.stringify(updatedResume));
+      }
+    } catch (error) {
+      console.error("Error renaming resume:", error);
+      toast.error("Failed to rename resume");
+      setIsEditingEnabled(true);
+    } finally {
+      setIsModalOpen(false);
+      selectedResume.current = null;
     }
   };
 
@@ -178,6 +223,12 @@ const ResumeUpload = () => {
                 <div
                   key={resume.id}
                   className="flex justify-between items-center p-3 border rounded-md"
+                  onClick={() => {
+                    setIsModalOpen(true);
+                    selectedResume.current = resume;
+                    setNewName(resume.name);
+                    setIsEditingEnabled(false);
+                  }}
                 >
                   <div className="flex items-center">
                     <svg
@@ -194,8 +245,8 @@ const ResumeUpload = () => {
                         d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
                       />
                     </svg>
-                    <span className="text-sm text-gray-700">
-                      Resume {index + 1}
+                    <span className="text-sm text-gray-700 capitalize">
+                      {resume.name}
                     </span>
                   </div>
                   <span className="text-xs text-gray-500">
@@ -204,6 +255,101 @@ const ResumeUpload = () => {
                 </div>
               ))}
             </div>
+          )}
+          {isModalOpen && (
+            <CustomModal>
+              <h4 className="text-lg font-semibold mb-4">Resume Details</h4>
+
+              <label
+                className="text-sm text-gray-500 mb-3"
+                htmlFor="resume-name"
+              >
+                Resume Name:
+              </label>
+              <input
+                name="name"
+                id="resume-name"
+                value={newName}
+                readOnly={!isEditingEnabled}
+                onChange={(e) => setNewName(e.target.value)}
+                className="sathi-input"
+                style={{
+                  borderColor: !newName.length ? "#555" : "red",
+                }}
+              />
+              <span className="block text-[12px] font-medium py-1 px-[10px] text-[red]">
+                {newName.length === 0 && "Please enter a name for the resume"}
+              </span>
+
+              <div className="flex grid-cols-2 items-center gap-2 mt-4 text-[12px]">
+                ⬆️ Uploaded On:
+                <span className="text-gray-500">
+                  {new Date(
+                    selectedResume.current?.uploaded_at
+                  ).toLocaleDateString()}
+                </span>
+              </div>
+              {new Date(
+                selectedResume.current?.uploaded_at
+              ).toLocaleDateString() !==
+                new Date(
+                  selectedResume.current?.last_updated
+                ).toLocaleDateString() && (
+                <div className="flex items-center gap-2 mt-1 mb-4 text-[12px]">
+                  🕒 Updated On:
+                  <span className="text-gray-500">
+                    {new Date(
+                      selectedResume.current?.last_updated
+                    ).toLocaleDateString()}
+                  </span>
+                </div>
+              )}
+              {isEditingEnabled ? (
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={() => {
+                      setIsEditingEnabled(false);
+                      setNewName(selectedResume.current?.name);
+                    }}
+                    className="mt-4 sathi-btn-secondary cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (newName.length === 0) {
+                        toast.error("Please Enter a Name for the Resume");
+                        return;
+                      }
+                      handleRenameResume(selectedResume.current?.id, newName);
+                    }}
+                    className="mt-4 sathi-btn-primary cursor-pointer"
+                  >
+                    Save
+                  </button>
+                </div>
+              ) : (
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={() => {
+                      setIsEditingEnabled(true);
+                    }}
+                    className="mt-4  sathi-btn-secondary cursor-pointer"
+                  >
+                    Rename
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsModalOpen(false);
+                      selectedResume.current = null;
+                    }}
+                    className="mt-4 sathi-btn-primary cursor-pointer"
+                  >
+                    Close
+                  </button>
+                </div>
+              )}
+            </CustomModal>
           )}
         </div>
       </div>
