@@ -54,13 +54,16 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const logout = () => {
-    setUser(null);
-    secureLocalStorage.removeItem("user");
-    secureLocalStorage.removeItem("token");
-    secureLocalStorage.removeItem("refresh_token");
-    toast.success("Logged out successfully!");
-    navigate("/login");
+    secureLocalStorage.clear();
+    initiateAuthConfirmation();
+    navigate("/", { replace: true });
+    setTimeout(() => toast.success("Logged out successfully!"), 150);
   };
+
+  const updateUser = (userData) => {
+    setUser(userData);
+    secureLocalStorage.setItem("user", JSON.stringify(userData));
+  }
 
   const forgotPassword = async (email) => {
     setLoading(true);
@@ -104,9 +107,9 @@ export const AuthProvider = ({ children }) => {
     error,
     token,
     isAuthenticated,
+    updateUser,
     setIsAuthenticated,
     initiateAuthConfirmation,
-    register,
     logout,
     forgotPassword,
     resetPassword,

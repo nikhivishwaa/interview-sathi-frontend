@@ -2,17 +2,13 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import secureLocalStorage from "react-secure-storage";
+import { toast } from "sonner";
 
 const Header = () => {
-  const { initiateAuthConfirmation, user } = useAuth();
+  const { initiateAuthConfirmation, user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    secureLocalStorage.clear();
-    initiateAuthConfirmation();
-    toast.success("Logged out successfully!");
-    navigate("/", { replace: true });
-  };
+  
 
   return (
     <header className="bg-white border-b border-gray-200 shadow-sm">
@@ -54,7 +50,7 @@ const Header = () => {
                   Profile
                 </Link>
                 <button
-                  onClick={handleLogout}
+                  onClick={logout}
                   className="text-gray-700 hover:text-sathi-primary transition-colors"
                 >
                   Logout

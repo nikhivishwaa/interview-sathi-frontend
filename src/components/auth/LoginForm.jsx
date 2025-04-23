@@ -6,7 +6,7 @@ import { emailValidator } from "../../helpers/validators";
 import axios from "axios";
 import secureLocalStorage from "react-secure-storage";
 const LoginForm = () => {
-  const { initiateAuthConfirmation } = useAuth();
+  const { initiateAuthConfirmation, updateUser } = useAuth();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const [email, setEmail] = useState("");
@@ -78,7 +78,7 @@ const LoginForm = () => {
         const { access, refresh, user } = response.data.data;
         secureLocalStorage.setItem("token", access);
         secureLocalStorage.setItem("refresh_token", refresh);
-        secureLocalStorage.setItem("user", JSON.stringify(user));
+        updateUser(user);
         secureLocalStorage.setItem("lastLogin", new Date().getTime());
         initiateAuthConfirmation();
         toast.success(

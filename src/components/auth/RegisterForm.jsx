@@ -229,7 +229,6 @@ const RegisterForm = () => {
               id="last_name"
               name="last_name"
               type="text"
-              required
               className="sathi-input mt-1"
               readOnly={submitting}
               placeholder="Your Last Name"

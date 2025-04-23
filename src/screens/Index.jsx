@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const Index = () => {
-  const { user } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
     <div className="min-h-screen bg-white">
@@ -29,7 +29,7 @@ const Index = () => {
             </div>
 
             <div className="flex items-center space-x-4">
-              {user ? (
+              {isAuthenticated ? (
                 <Link to="/dashboard" className="sathi-btn-primary">
                   Go to Dashboard
                 </Link>
@@ -64,10 +64,10 @@ const Index = () => {
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link
-                to={user ? "/interviews/schedule" : "/register"}
+                to={isAuthenticated ? "/interviews/schedule" : "/register"}
                 className="sathi-btn-primary px-8 py-3 text-lg"
               >
-                {user ? "Schedule Interview" : "Get Started"}
+                {isAuthenticated ? "Schedule Interview" : "Get Started"}
               </Link>
               <a
                 href="#features"
@@ -185,10 +185,10 @@ const Index = () => {
               Create an account and start practicing today
             </p>
             <Link
-              to={user ? "/interviews/schedule" : "/register"}
+              to={isAuthenticated ? "/interviews/schedule" : "/register"}
               className="sathi-btn-primary px-8 py-3 text-lg"
             >
-              {user ? "Schedule Your First Interview" : "Sign Up for Free"}
+              {isAuthenticated ? "Schedule Your First Interview" : "Sign Up for Free"}
             </Link>
           </div>
         </div>
