@@ -59,7 +59,7 @@ function App() {
             {/* <Route path="/dashboard" element={<DashboardScreen />} /> */}
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/interviews/schedule" element={<ScheduleInterviewScreen />} />
-            <Route path="/interview/:id" element={<InterviewScreen />} />
+            <Route path="/interviews/:id" element={<InterviewScreen />} />
             <Route path="/feedback/:id" element={<FeedbackScreen />} />
             <Route path="/profile" element={<ProfileScreen />} />
           </Route>
