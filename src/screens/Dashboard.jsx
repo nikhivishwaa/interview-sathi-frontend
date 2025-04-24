@@ -1,19 +1,23 @@
+import React, { useState, useEffect } from "react";
+import Header from "../components/Header";
+import DashboardStats from "../components/dashboard/DashboardStats";
+import UpcomingInterviews from "../components/dashboard/UpcomingInterviews";
+import RecentFeedback from "../components/dashboard/RecentFeedback";
+import ResumeUpload from "../components/resume/ResumeUpload";
+import { useAuth } from "../context/AuthContext";
+import { useInterview } from "../context/InterviewContext";
+import { toast } from "sonner";
+import axios from "axios";
 
-import React, { useState, useEffect } from 'react';
-import Header from '../components/Header';
-import DashboardStats from '../components/dashboard/DashboardStats';
-import UpcomingInterviews from '../components/dashboard/UpcomingInterviews';
-import RecentFeedback from '../components/dashboard/RecentFeedback';
-import ResumeUpload from '../components/resume/ResumeUpload';
-import { useAuth } from '../context/AuthContext';
-import { useInterview } from '../context/InterviewContext';
-import { getInterviews, cancelInterview } from '../api/api';
-import { toast } from 'sonner';
-
+const API = import.meta.env.VITE_BACKEND;
 const Dashboard = () => {
-  const { user } = useAuth();
-  const {interviews, getInterviews} = useInterview();
+  const { user, token } = useAuth();
+  const { interviews, getInterviews, setInterviews } = useInterview();
   const [loading, setLoading] = useState(true);
+  const [totalInterviews, setTotalInterviews] = useState(0);
+  const [completedInterviews, setCompletedInterviews] = useState(0);
+  const [upcomingInterviews, setUpcomingInterviews] = useState(0);
+  const [averageScore, setAverageScore] = useState(0);
 
   useEffect(() => {
     fetchInterviews();
@@ -24,8 +28,8 @@ const Dashboard = () => {
       setLoading(true);
       const data = await getInterviews();
     } catch (error) {
-      console.error('Error fetching interviews:', error);
-      toast.error('Failed to load your interviews');
+      console.error("Error fetching interviews:", error);
+      toast.error("Failed to load your interviews");
     } finally {
       setLoading(false);
     }
@@ -33,33 +37,64 @@ const Dashboard = () => {
 
   const handleCancelInterview = async (id) => {
     try {
-      await cancelInterview(id);
-      toast.success('Interview cancelled successfully');
-      fetchInterviews();
+      setLoading(true);
+      const response = await axios.delete(`${API}/interviews/${id}/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.status === 200) {
+        console.log({ data: response.data });
+        toast.success("Interview Cancelled Successfully");
+        setInterviews(
+          interviews.map((interview) =>
+            interview.id !== id ? interview : response.data?.data
+          )
+        );
+      }
     } catch (error) {
-      console.error('Error cancelling interview:', error);
-      toast.error('Failed to cancel interview');
+      console.error("Error scheduling interview:", error);
+      if (error?.response?.status === 404) toast.error("Interview Not Exist");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Calculate statistics
-  const totalInterviews = interviews.length;
-  const completedInterviews = interviews.filter(interview => interview.status === 'completed').length;
-  const upcomingInterviews = interviews.filter(interview => interview.status === 'scheduled').length;
-  
-  // Calculate average score
-  const interviewsWithFeedback = interviews.filter(interview => interview.feedback);
-  const averageScore = interviewsWithFeedback.length > 0
-    ? Math.round(
-        interviewsWithFeedback.reduce((sum, interview) => sum + (interview.feedback?.overallScore || 0), 0) / 
-        interviewsWithFeedback.length
-      )
-    : undefined;
+  useEffect(() => {
+    // Calculate statistics
+    const totalInterviews_ = interviews.length;
+    const completedInterviews_ = interviews.filter(
+      (interview) => interview.status === "completed"
+    ).length;
+    const upcomingInterviews_ = interviews.filter(
+      (interview) => interview.status === "scheduled"
+    ).length;
+
+    // Calculate average score
+    const interviewsWithFeedback = interviews.filter(
+      (interview) => interview.metadata?.feedback
+    );
+    const averageScore_ =
+      interviewsWithFeedback.length > 0
+        ? Math.round(
+            interviewsWithFeedback.reduce(
+              (sum, interview) => sum + (interview.feedback?.overallScore || 0),
+              0
+            ) / interviewsWithFeedback.length
+          )
+        : undefined;
+
+    setAverageScore(averageScore_);
+    setTotalInterviews(totalInterviews_);
+    setCompletedInterviews(completedInterviews_);
+    setUpcomingInterviews(upcomingInterviews_);
+  }, [interviews]);
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      
+
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8">
           <div>
@@ -67,28 +102,32 @@ const Dashboard = () => {
             <p className="text-gray-600">Welcome back, {user?.first_name}</p>
           </div>
         </div>
-        
+
         <div className="space-y-8">
-          <DashboardStats 
+          <DashboardStats
             totalInterviews={totalInterviews}
             completedInterviews={completedInterviews}
             upcomingInterviews={upcomingInterviews}
             averageScore={averageScore}
           />
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <UpcomingInterviews 
-              interviews={interviews.filter(interview => interview.status === 'scheduled')}
+            <UpcomingInterviews
+              interviews={interviews.filter(
+                (interview) => interview.status === "scheduled"
+              )}
               onCancel={handleCancelInterview}
               loading={loading}
             />
-            
-            <RecentFeedback 
-              interviews={interviews.filter(interview => interview.status === 'completed')}
+
+            <RecentFeedback
+              interviews={interviews.filter(
+                (interview) => interview.status === "completed"
+              )}
               loading={loading}
             />
           </div>
-          
+
           <ResumeUpload />
         </div>
       </div>

@@ -2,13 +2,17 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Header from "../components/Header";
 import FeedbackDetail from "../components/feedback/FeedbackDetail";
-import { getFeedback } from "../api/api";
 import { toast } from "sonner";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
+
+const API = import.meta.env.VITE_BACKEND;
 const FeedbackScreen = () => {
   const { id } = useParams();
   const [feedback, setFeedback] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { token } = useAuth()
 
   useEffect(() => {
     if (!id) return;
@@ -16,39 +20,49 @@ const FeedbackScreen = () => {
     const fetchFeedback = async () => {
       try {
         setLoading(true);
-        const data = await getFeedback(Number(id));
+        const response = await axios.get(`${API}/feedback/${id}/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        if (response.status === 200) {
+          console.log({ data: response.data });
+          toast.success("Interview Cancelled Successfully");
+          const { data } = response.data;
+          // Create a mock feedback for demonstration
+          const mockFeedback = {
+            id: data.id || Number(id),
+            interviewId: data.interview_id || 1,
+            overallScore: data.overall_score || 75,
+            technicalScore: data.technical_score || 80,
+            communicationScore: data.communication_score || 70,
+            behavioralScore: data.behavioral_score || 78,
+            strengths: data.strengths || [
+              "Strong technical knowledge of JavaScript frameworks",
+              "Clear communication of complex concepts",
+              "Structured problem-solving approach",
+            ],
+            improvements: data.improvements || [
+              "Could provide more specific examples from past work",
+              "Consider pausing more to gather thoughts",
+              "Elaborate more on the debugging process",
+            ],
+            comments:
+              data.comments ||
+              `Overall, you demonstrated solid technical knowledge and communication skills. Your responses were well-structured and showed a methodical approach to problem-solving.
+  
+  Your strongest area was in explaining technical concepts clearly and concisely. You also did well in describing your workflow and collaboration style.
+  
+  To improve, try to provide more concrete examples from your past experiences that highlight specific achievements. Additionally, taking a moment to gather your thoughts before responding could help you deliver more comprehensive answers.`,
+          };
 
-        // Create a mock feedback for demonstration
-        const mockFeedback = {
-          id: data.id || Number(id),
-          interviewId: data.interview_id || 1,
-          overallScore: data.overall_score || 75,
-          technicalScore: data.technical_score || 80,
-          communicationScore: data.communication_score || 70,
-          behavioralScore: data.behavioral_score || 78,
-          strengths: data.strengths || [
-            "Strong technical knowledge of JavaScript frameworks",
-            "Clear communication of complex concepts",
-            "Structured problem-solving approach",
-          ],
-          improvements: data.improvements || [
-            "Could provide more specific examples from past work",
-            "Consider pausing more to gather thoughts",
-            "Elaborate more on the debugging process",
-          ],
-          comments:
-            data.comments ||
-            `Overall, you demonstrated solid technical knowledge and communication skills. Your responses were well-structured and showed a methodical approach to problem-solving.
-
-Your strongest area was in explaining technical concepts clearly and concisely. You also did well in describing your workflow and collaboration style.
-
-To improve, try to provide more concrete examples from your past experiences that highlight specific achievements. Additionally, taking a moment to gather your thoughts before responding could help you deliver more comprehensive answers.`,
-        };
-
-        setFeedback(mockFeedback);
+          setFeedback(mockFeedback);
+        }
       } catch (error) {
         console.error("Error fetching feedback:", error);
-        toast.error("Failed to load feedback");
+        if (error?.response?.status === 404) toast.error("Interview Not Exist");
+        else toast.error("Failed to load feedback");
       } finally {
         setLoading(false);
       }

@@ -14,7 +14,7 @@ const InterviewRoom = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [sessionId, setSessionId] = useState(id);
+  // const [id, setSessionId] = useState(id);
   const [currentQuestion, setCurrentQuestion] = useState("");
   const [currentQuestionId, setCurrentQuestionId] = useState("");
   const [isListening, setIsListening] = useState(false);
@@ -31,8 +31,8 @@ const InterviewRoom = () => {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    if (sessionId) {
-      const wsUrl = `${WS_API}/ws/interview/${sessionId}/`;
+    if (id) {
+      const wsUrl = `${WS_API}/ws/interview/${id}/`;
       const socket = new WebSocket(wsUrl);
       socketRef.current = socket;
 
@@ -40,7 +40,7 @@ const InterviewRoom = () => {
         console.log("WebSocket connected");
         setLoading(false);
         startTimer();
-        initSpeechRecognition();
+        recognitionRef.current = initSpeechRecognition();
       };
 
       socket.onmessage = (event) => {
@@ -55,6 +55,8 @@ const InterviewRoom = () => {
         if (data.question && data.question_id) {
           setCurrentQuestion(data.question);
           setCurrentQuestionId(data.question_id);
+          setTranscript("");
+          setIsListening(false);
 
           // Speak the question
           speakText(
@@ -67,14 +69,14 @@ const InterviewRoom = () => {
 
       socket.onclose = () => {
         console.log("WebSocket disconnected");
-        // navigate(`/feedback/${sessionId}`, { replace: true });
       };
 
       return () => {
         socket.close();
       };
     }
-  }, [sessionId]);
+    // }, [id]);
+  }, [id]);
 
   const startTimer = () => {
     if (timerRef.current) return;
@@ -95,13 +97,10 @@ const InterviewRoom = () => {
   };
 
   const toggleListening = () => {
-    // if (isSpeaking) return; // Don't start listening while AI is speaking
-
     if (isListening) {
       setIsListening(false);
-      if (recognitionRef.current) {
-        stopSpeechRecognition(recognitionRef.current);
-      }
+      console.log({ transcript });
+      handleSubmitResponse();
     } else {
       setIsListening(true);
       setTranscript("");
@@ -111,7 +110,7 @@ const InterviewRoom = () => {
           recognitionRef.current,
           (text, isFinal) => {
             setTranscript(text);
-            console.log({ listened });
+            isFinal && handleSubmitResponse();
           },
           (error) => {
             console.error("Speech recognition error:", error);
@@ -125,6 +124,8 @@ const InterviewRoom = () => {
 
   const handleSubmitResponse = () => {
     if (!socketRef.current || !currentQuestionId || !transcript.trim()) return;
+    console.log("Submitting response:", transcript);
+    console.log("Current question ID:", currentQuestionId);
 
     setIsListening(false);
     setSubmitting(true);
@@ -135,7 +136,7 @@ const InterviewRoom = () => {
     socketRef.current.send(
       JSON.stringify({
         question_id: currentQuestionId,
-        answer: transcript,
+        answer: transcript.trim(),
       })
     );
 
@@ -161,6 +162,7 @@ const InterviewRoom = () => {
         type: "end_interview",
       })
     );
+    navigate(`/feedback/${id}`, { replace: true });
   };
 
   if (loading) {
@@ -279,7 +281,6 @@ const InterviewRoom = () => {
             </div>
           </div>
 
-          
           {/* Interview Tips */}
           <div className="sathi-card">
             <h3 className="font-medium text-gray-900 mb-3">Interview Tips</h3>
@@ -303,7 +304,7 @@ const InterviewRoom = () => {
               </li>
             </ul>
           </div>
-          </div>
+        </div>
 
         <div className="lg:col-span-1">
           {/* Video Preview */}
@@ -337,14 +338,13 @@ const InterviewRoom = () => {
               </div>
             </div>
             {/* Controls Area */}
-        
           </div>
           <div className="sathi-card p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <button
                   onClick={toggleListening}
-                  disabled={isSpeaking || submitting}
+                  disabled={isSpeaking}
                   className={`h-12 w-12 rounded-full flex items-center justify-center ${
                     isListening
                       ? "bg-red-500 text-white"
@@ -374,7 +374,7 @@ const InterviewRoom = () => {
               <button
                 onClick={handleSubmitResponse}
                 disabled={
-                  !transcript.trim() || submitting || isListening || isSpeaking
+                  !transcript.trim() || submitting || isSpeaking
                 }
                 className="sathi-btn-primary px-6 disabled:opacity-50"
               >
@@ -400,6 +400,7 @@ const InterviewRoom = () => {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       ></path>
                     </svg>
+                    sending...
                   </>
                 ) : (
                   <>send</>
@@ -407,7 +408,6 @@ const InterviewRoom = () => {
               </button>
             </div>
           </div>
-
         </div>
       </div>
     </div>

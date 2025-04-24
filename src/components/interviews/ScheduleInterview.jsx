@@ -13,10 +13,11 @@ const ScheduleInterview = () => {
   const [time, setTime] = useState(null);
   const [resumeId, setResumeId] = useState(null);
   const [jobRole, setJobRole] = useState("frontend");
+  const [jd, setJD] = useState("");
   const [scheduling, setScheduling] = useState(false);
   const navigate = useNavigate();
   const { token } = useAuth();
-  const { resumes, getInterview } = useInterview();
+  const { resumes, interview, setInterview } = useInterview();
 
   // Calculate min date (today)
   const today = new Date();
@@ -42,12 +43,15 @@ const ScheduleInterview = () => {
       toast.error("Please Select a Resume");
       return;
     }
+    if (!(jd.length > 30)) {
+      toast.error("Please Enter Valid Job Description");
+      return;
+    }
     if (!validateDateTime(date, time)) {
       toast.error("Please select a valid date and time in the future");
       return;
-    }
-    else{
-      const schedule = new Date(`${date}T${time}`).toJSON()
+    } else {
+      const schedule = new Date(`${date}T${time}`).toJSON();
       setDateTime(schedule);
       setScheduling(true);
       scheduleInterview(schedule);
@@ -69,6 +73,7 @@ const ScheduleInterview = () => {
           resume_id: resumeId,
           scheduled_at: scheduled_at,
           role: jobRole,
+          job_desc: jd,
         },
         {
           headers: {
@@ -78,9 +83,9 @@ const ScheduleInterview = () => {
         }
       );
       if (response.status === 201) {
-        console.log({data: response.data});
+        console.log({ data: response.data });
         toast.success("Interview Scheduled Successfully");
-        getInterview();
+        setInterview([...interview, response.data?.data]);
       }
     } catch (error) {
       console.error("Error scheduling interview:", error);
@@ -164,25 +169,46 @@ const ScheduleInterview = () => {
             >
               Resume
             </label>
-            {resumes.map((r) => (
-              <label
-                htmlFor={`res-${r.id}`}
-                className="sathi-input capitalize"
-                key={r.id}
-              >
-                <input
-                  type="radio"
-                  id={`res-${r.id}`}
-                  name="resume_id"
-                  value={r.id}
-                  onChange={(e) => setResumeId(e.target.value)}
-                />
-                📄{r.name} - {new Date(r.uploaded_at).toLocaleDateString()}{" "}
-                <button onClick={() => window.open(`${API}${r.file}`)}>
-                  ↗️
-                </button>
-              </label>
-            ))}
+            <div className="flex flex-col gap-1">
+              {resumes.map((r) => (
+                <label
+                  htmlFor={`res-${r.id}`}
+                  className="sathi-input capitalize"
+                  key={r.id}
+                >
+                  <input
+                    type="radio"
+                    id={`res-${r.id}`}
+                    name="resume_id"
+                    value={r.id}
+                    onChange={(e) => setResumeId(e.target.value)}
+                  />
+                  📄{r.name.length >= 9 ? r.name.slice(0, 9) + "..." : r.name} -{" "}
+                  {new Date(r.uploaded_at).toLocaleDateString()}{" "}
+                  <button onClick={() => window.open(`${API}${r.file}`)}>
+                    ↗️
+                  </button>
+                </label>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label
+              htmlFor="jd"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Job Description
+            </label>
+            <textarea
+              rows={4}
+              id="jd"
+              value={jd}
+              onChange={(e) => setJD(e.target.value)}
+              className="sathi-input"
+              required={true}
+              minLength={10}
+              placeholder="Job Description"
+            ></textarea>
           </div>
 
           <div className="pt-4">

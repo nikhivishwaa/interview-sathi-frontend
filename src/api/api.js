@@ -85,9 +85,3 @@ export const endInterview = async (sessionId) => {
   return response.data;
 };
 
-export const getFeedback = async (feedbackId) => {
-  const response = await axios.get(`${API_BASE_URL}/interviews/feedback/${feedbackId}/`, {
-    headers: getAuthHeader()
-  });
-  return response.data;
-};
