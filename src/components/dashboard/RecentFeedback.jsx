@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { feedbackImpovementSvg } from "../../data/SvgImageData";
 
 const RecentFeedback = ({ interviews, loading = false }) => {
   // Filter only interviews with feedback
@@ -77,22 +78,26 @@ const RecentFeedback = ({ interviews, loading = false }) => {
                   </span>
                   <div
                     className={`w-2 h-2 ml-2 rounded-full ${
-                      (interview?.metadata?.feedback?.overall_score || 0) >= 80
-                        ? "bg-[#01bc4f]"
+                      (interview?.metadata?.feedback?.overall_score || 0) >= 90
+                        ? "bg-[#d800ff]"
                         : (interview?.metadata?.feedback?.overall_score || 0) >=
-                          60
-                        ? "bg-[#4cff96]"
+                          75
+                        ? "bg-[#0098ff]"
                         : (interview?.metadata?.feedback?.overall_score || 0) >=
-                          40
-                        ? "bg-yellow-500"
-                        : "bg-red-500"
+                          50
+                        ? "bg-[#06e55c]"
+                        : (interview?.metadata?.feedback?.overall_score || 0) >
+                          20
+                        ? "bg-[#ffad19]"
+                        : "bg-[#ff0000]"
                     }`}
                   ></div>
                 </div>
               </div>
-              <p className="text-sm text-gray-500 line-clamp-2 mb-1">
-                ✨{interview?.metadata?.feedback?.strengths[0]}
-              </p>
+              <div className="text-sm text-gray-500 line-clamp-2 mb-1 flex">
+                {feedbackImpovementSvg}{" "}
+                {interview?.metadata?.feedback?.improvements[0]}
+              </div>
               <Link
                 to={`/feedback/${interview?.id}`}
                 className="text-xs text-sathi-primary hover:underline"

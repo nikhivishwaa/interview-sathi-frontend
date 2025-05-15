@@ -82,7 +82,7 @@ const Dashboard = () => {
       interviewsWithFeedback.length > 0
         ? Math.round(
             interviewsWithFeedback.reduce(
-              (sum, interview) => sum + (interview.feedback?.overallScore || 0),
+              (sum, interview) => sum + (interview?.metadata?.feedback?.overall_score || 0),
               0
             ) / interviewsWithFeedback.length
           )

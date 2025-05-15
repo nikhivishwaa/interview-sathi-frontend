@@ -11,7 +11,8 @@ const sampleFeedback = {
   overallAssessment: "Good",
   technicalScore: 80,
   communicationScore: 70,
-  behavioralScore: 78,
+  grammarScore: 78,
+  relevanceScore: 78,
   strengths: [
     "Strong technical knowledge of JavaScript frameworks",
     "Clear communication of complex concepts",
@@ -52,16 +53,15 @@ const FeedbackScreen = () => {
           // Create a mock feedback for demonstration
           const mockFeedback = {
             id,
-            overallScore: data.overall_score || sampleFeedback.overallScore,
-            overallAssessment: data.overall_assessment || sampleFeedback.overallAssessment,
-            technicalScore: data.technical || sampleFeedback.technicalScore,
-            communicationScore:
-              data.communication || sampleFeedback.communicationScore,
-            behavioralScore: data.behavioral || sampleFeedback.behavioralScore,
-            strengths: data.strengths || sampleFeedback.strengths,
-            improvements: data.improvements || sampleFeedback.improvements,
-            detailedFeedback:
-              data.detailed_feedback || sampleFeedback.detailedFeedback,
+            overallScore: data.overall_score || 0,
+            technicalScore: data.scores?.technical || 0,
+            communicationScore: data.scores?.communication || 0,
+            grammarScore: data.scores?.grammar || 0,
+            relevanceScore: data.scores?.relevance || 0,
+            strengths: data.strengths || [],
+            improvements: data.improvements || [],
+            detailedFeedback: data.detailed_feedback || "",
+            behavioralFeedback: data.behavioral_feedback || "",
           };
 
           setFeedback(mockFeedback);
