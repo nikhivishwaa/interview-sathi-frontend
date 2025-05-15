@@ -8,6 +8,8 @@ import { useAuth } from "../context/AuthContext";
 import { useInterview } from "../context/InterviewContext";
 import { toast } from "sonner";
 import axios from "axios";
+import RenderSvg from "../components/RenderSvg";
+import { refreshIconSvg } from "../data/SvgImageData";
 
 const API = import.meta.env.VITE_BACKEND;
 const Dashboard = () => {
@@ -27,6 +29,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       const data = await getInterviews();
+      console.log({data})
     } catch (error) {
       console.error("Error fetching interviews:", error);
       toast.error("Failed to load your interviews");
@@ -100,6 +103,12 @@ const Dashboard = () => {
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
             <p className="text-gray-600">Welcome back, {user?.first_name}</p>
+          </div>
+          <div className="flex rounded-lg bg-white shadow-md p-2 cursor-pointer hover:bg-gray-50 transition duration-200 ease-in-out" onClick={()=>{
+            fetchInterviews();
+            toast.success("Interviews Refreshed");
+          }}>
+            <RenderSvg svgName={refreshIconSvg} />
           </div>
         </div>
 

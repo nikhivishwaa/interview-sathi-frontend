@@ -25,7 +25,8 @@ const FeedbackDetail = ({ feedback }) => {
                   <div className="font-medium text-gray-900">
                     {feedback.overallScore >= 80 ? 'Excellent' : 
                      feedback.overallScore >= 60 ? 'Good' : 
-                     feedback.overallScore >= 40 ? 'Fair' : 'Needs Improvement'}
+                     feedback.overallScore >= 40 ? 'Fair' :
+                     feedback.overallScore >= 20 ? 'Needs Improvement':'Poor'}
                   </div>
                   <div className="text-sm text-gray-500">Overall Assessment</div>
                 </div>
@@ -96,7 +97,7 @@ const FeedbackDetail = ({ feedback }) => {
         
         <div className="border-t border-gray-200 pt-6 mt-2">
           <h3 className="font-medium text-gray-900 mb-3">Detailed Feedback</h3>
-          <p className="text-sm text-gray-700 whitespace-pre-line">{feedback.comments}</p>
+          <p className="text-sm text-gray-700 whitespace-pre-line">{feedback?.detailedFeedback}</p>
         </div>
       </div>
       

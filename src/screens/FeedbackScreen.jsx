@@ -6,19 +6,39 @@ import { toast } from "sonner";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 
+const sampleFeedback = {
+  overallScore: 75,
+  overallAssessment: "Good",
+  technicalScore: 80,
+  communicationScore: 70,
+  behavioralScore: 78,
+  strengths: [
+    "Strong technical knowledge of JavaScript frameworks",
+    "Clear communication of complex concepts",
+    "Structured problem-solving approach",
+  ],
+  improvements: [
+    "Could provide more specific examples from past work",
+    "Consider pausing more to gather thoughts",
+    "Elaborate more on the debugging process",
+  ],
+  detailedFeedback: `Overall, you demonstrated solid technical knowledge and communication skills. Your responses were well-structured and showed a methodical approach to problem-solving.
 
+Your strongest area was in explaining technical concepts clearly and concisely. You also did well in describing your workflow and collaboration style.
+
+To improve, try to provide more concrete examples from your past experiences that highlight specific achievements. Additionally, taking a moment to gather your thoughts before responding could help you deliver more comprehensive answers.`,
+};
 const API = import.meta.env.VITE_BACKEND;
 const FeedbackScreen = () => {
   const { id } = useParams();
   const [feedback, setFeedback] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { token } = useAuth()
+  const { token } = useAuth();
 
   useEffect(() => {
-    if (!id) return;
-
     const fetchFeedback = async () => {
       try {
+        console.log({ token });
         setLoading(true);
         const response = await axios.get(`${API}/feedback/${id}/`, {
           headers: {
@@ -28,33 +48,20 @@ const FeedbackScreen = () => {
         });
         if (response.status === 200) {
           console.log({ data: response.data });
-          toast.success("Interview Cancelled Successfully");
           const { data } = response.data;
           // Create a mock feedback for demonstration
           const mockFeedback = {
-            id: data.id || Number(id),
-            interviewId: data.interview_id || 1,
-            overallScore: data.overall_score || 75,
-            technicalScore: data.technical_score || 80,
-            communicationScore: data.communication_score || 70,
-            behavioralScore: data.behavioral_score || 78,
-            strengths: data.strengths || [
-              "Strong technical knowledge of JavaScript frameworks",
-              "Clear communication of complex concepts",
-              "Structured problem-solving approach",
-            ],
-            improvements: data.improvements || [
-              "Could provide more specific examples from past work",
-              "Consider pausing more to gather thoughts",
-              "Elaborate more on the debugging process",
-            ],
-            comments:
-              data.comments ||
-              `Overall, you demonstrated solid technical knowledge and communication skills. Your responses were well-structured and showed a methodical approach to problem-solving.
-  
-  Your strongest area was in explaining technical concepts clearly and concisely. You also did well in describing your workflow and collaboration style.
-  
-  To improve, try to provide more concrete examples from your past experiences that highlight specific achievements. Additionally, taking a moment to gather your thoughts before responding could help you deliver more comprehensive answers.`,
+            id,
+            overallScore: data.overall_score || sampleFeedback.overallScore,
+            overallAssessment: data.overall_assessment || sampleFeedback.overallAssessment,
+            technicalScore: data.technical || sampleFeedback.technicalScore,
+            communicationScore:
+              data.communication || sampleFeedback.communicationScore,
+            behavioralScore: data.behavioral || sampleFeedback.behavioralScore,
+            strengths: data.strengths || sampleFeedback.strengths,
+            improvements: data.improvements || sampleFeedback.improvements,
+            detailedFeedback:
+              data.detailed_feedback || sampleFeedback.detailedFeedback,
           };
 
           setFeedback(mockFeedback);
@@ -69,7 +76,7 @@ const FeedbackScreen = () => {
     };
 
     fetchFeedback();
-  }, [id]);
+  }, []);
 
   if (loading) {
     return (

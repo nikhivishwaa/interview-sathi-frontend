@@ -67,8 +67,8 @@ function App() {
                     path="/interviews/schedule"
                     element={<ScheduleInterviewScreen />}
                   />
-                  <Route path="/interview/:id" element={<InterviewScreen />} />
                   <Route path="/feedback/:id" element={<FeedbackScreen />} />
+                  <Route path="/interview/:id" element={<InterviewScreen />} />
                   <Route path="/profile" element={<ProfileScreen />} />
                 </Route>
 

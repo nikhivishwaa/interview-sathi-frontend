@@ -37,12 +37,12 @@ const Header = () => {
                 >
                   Dashboard
                 </Link>
-                <Link
+                {/* <Link
                   to="/interviews"
                   className="text-gray-700 hover:text-sathi-primary transition-colors"
                 >
                   Interviews
-                </Link>
+                </Link> */}
                 <Link
                   to="/profile"
                   className="text-gray-700 hover:text-sathi-primary transition-colors"

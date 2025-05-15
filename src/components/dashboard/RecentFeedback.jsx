@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const RecentFeedback = ({ interviews, loading = false }) => {
   // Filter only interviews with feedback
   const interviewsWithFeedback = interviews.filter(
-    (interview) => interview.feedback
+    (interview) => interview?.metadata?.feedback
   );
 
   if (loading) {
@@ -66,20 +66,24 @@ const RecentFeedback = ({ interviews, loading = false }) => {
             >
               <div className="flex justify-between mb-2">
                 <span className="font-medium text-gray-900">
-                  {new Date(interview.date).toLocaleDateString("en-US", {
+                  {new Date(interview?.ended_at).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
                   })}
                 </span>
                 <div className="flex items-center">
                   <span className="text-sm font-medium">
-                    Score: {interview.feedback?.overallScore}%
+                    Score: {interview.metadata.feedback?.overall_score}%
                   </span>
                   <div
                     className={`w-2 h-2 ml-2 rounded-full ${
-                      interview.feedback?.overallScore || 0 >= 80
-                        ? "bg-green-500"
-                        : interview.feedback?.overallScore || 0 >= 60
+                      (interview?.metadata?.feedback?.overall_score || 0) >= 80
+                        ? "bg-[#01bc4f]"
+                        : (interview?.metadata?.feedback?.overall_score || 0) >=
+                          60
+                        ? "bg-[#4cff96]"
+                        : (interview?.metadata?.feedback?.overall_score || 0) >=
+                          40
                         ? "bg-yellow-500"
                         : "bg-red-500"
                     }`}
@@ -87,10 +91,10 @@ const RecentFeedback = ({ interviews, loading = false }) => {
                 </div>
               </div>
               <p className="text-sm text-gray-500 line-clamp-2 mb-1">
-                {interview.feedback?.strengths[0]}
+                ✨{interview?.metadata?.feedback?.strengths[0]}
               </p>
               <Link
-                to={`/feedback/${interview.feedback?.id}`}
+                to={`/feedback/${interview?.id}`}
                 className="text-xs text-sathi-primary hover:underline"
               >
                 View detailed feedback
