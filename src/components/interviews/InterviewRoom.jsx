@@ -162,7 +162,7 @@ const InterviewRoom = () => {
         type: "end_interview",
       })
     );
-    navigate(`/feedback/${id}`, { replace: true });
+    navigate(`/feedback/${id}`, { replace: true, state:{lazyload: true} });
   };
 
   if (loading) {

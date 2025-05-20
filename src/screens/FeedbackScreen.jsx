@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import FeedbackDetail from "../components/feedback/FeedbackDetail";
 import { toast } from "sonner";
@@ -32,6 +32,7 @@ To improve, try to provide more concrete examples from your past experiences tha
 const API = import.meta.env.VITE_BACKEND;
 const FeedbackScreen = () => {
   const { id } = useParams();
+  const route = useLocation();
   const [feedback, setFeedback] = useState(null);
   const [loading, setLoading] = useState(true);
   const { token } = useAuth();
@@ -75,7 +76,8 @@ const FeedbackScreen = () => {
       }
     };
 
-    fetchFeedback();
+    if (route?.state?.lazyload) setTimeout(fetchFeedback, 10000);
+    else fetchFeedback();
   }, []);
 
   if (loading) {
