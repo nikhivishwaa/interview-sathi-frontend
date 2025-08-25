@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { emailValidator } from "../../helpers/validators";
 import axios from "axios";
 import secureLocalStorage from "react-secure-storage";
+import { analytics, setAnalyticsUser } from "../../helpers/analytics";
+
 const LoginForm = () => {
   const { initiateAuthConfirmation, updateUser } = useAuth();
   const navigate = useNavigate();
@@ -76,6 +78,13 @@ const LoginForm = () => {
       );
       if (response.status === 200) {
         const { access, refresh, user } = response.data.data;
+        setAnalyticsUser(user.id);
+        analytics.event({
+          category: "User Authentication",
+          action: "user_logged_in",
+          label: `success`,
+          value: user.id,
+        });
         secureLocalStorage.setItem("token", access);
         secureLocalStorage.setItem("refresh_token", refresh);
         updateUser(user);

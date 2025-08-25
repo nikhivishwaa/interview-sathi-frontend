@@ -6,6 +6,8 @@ import CustomModal from "../modals/CustomModal";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
 import secureLocalStorage from "react-secure-storage";
+import { analytics } from "../../helpers/analytics";
+
 
 const API = import.meta.env.VITE_BACKEND;
 const ResumeUpload = () => {
@@ -98,6 +100,13 @@ const ResumeUpload = () => {
       );
       if (response.status === 202) {
         toast.success("Resume renamed successfully");
+
+        analytics.event({
+          category: "Resume",
+          action: "resume_renamed",
+          label: `success`,
+          value: resume_id,
+        });
         const updatedResume = resumes.map((resume) => {
           if (resume.id === resume_id) {
             return response.data?.data;

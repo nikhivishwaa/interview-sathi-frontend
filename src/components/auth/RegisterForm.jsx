@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { toast } from "sonner";
 import axios from "axios";
 import { emailValidator, passwordValidator } from "../../helpers/validators";
+import { analytics } from "../../helpers/analytics";
 
 const RegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -159,6 +160,13 @@ const RegisterForm = () => {
       });
       if (response.status === 201) {
         console.log(response.data);
+
+        analytics.event({
+          category: "User Onboarding",
+          action: "new_user",
+          label: `success`,
+          value: response.data?.data?.id,
+        });
         toast.success("Registration successful! Please log in.");
         navigate("/login", {
           replace: true,

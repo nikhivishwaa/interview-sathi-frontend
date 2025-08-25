@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
 import secureLocalStorage from "react-secure-storage";
 import axios from "axios";
+import { analytics } from "../helpers/analytics";
 
 const ProfileScreen = () => {
   const { user, logout, token, updateUser } = useAuth();
@@ -197,6 +198,12 @@ const ProfileScreen = () => {
       if (response.status === 202) {
         console.log(response.data);
         updateUser(response.data?.data);
+        analytics.event({
+          category: "User Profile",
+          action: "update_profile",
+          label: `success`,
+          value: response.data?.data?.id,
+        });
         setIsEditable(false);
         toast.success("Profile updated successfully.");
       }

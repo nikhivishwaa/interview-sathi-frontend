@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import axios from "axios";
 import secureLocalStorage from "react-secure-storage";
+import { analytics, setAnalyticsUser } from "../helpers/analytics";
 
 const API = import.meta.env.VITE_BACKEND || "http://localhost:8000";
 
@@ -53,7 +54,17 @@ export const AuthProvider = ({ children }) => {
     initiateAuthConfirmation();
   }, []);
 
+  useEffect(() => {
+    setAnalyticsUser(user?.id);
+  }, [user]);
+
   const logout = () => {
+    analytics.event({
+      category: "User Authentication",
+      action: "Logout",
+      label: "successful",
+    });
+    setAnalyticsUser();
     secureLocalStorage.clear();
     initiateAuthConfirmation();
     navigate("/", { replace: true });
@@ -63,7 +74,7 @@ export const AuthProvider = ({ children }) => {
   const updateUser = (userData) => {
     setUser(userData);
     secureLocalStorage.setItem("user", JSON.stringify(userData));
-  }
+  };
 
   const forgotPassword = async (email) => {
     setLoading(true);
