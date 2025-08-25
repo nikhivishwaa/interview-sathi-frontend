@@ -5,6 +5,7 @@ import FeedbackDetail from "../components/feedback/FeedbackDetail";
 import { toast } from "sonner";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import { analytics } from "../helpers/analytics";
 
 const sampleFeedback = {
   overallScore: 75,
@@ -50,6 +51,14 @@ const FeedbackScreen = () => {
         });
         if (response.status === 200) {
           console.log({ data: response.data });
+          analytics.event({
+            category: "Interview",
+            action: route?.state?.lazyload
+              ? "feedback_generated"
+              : "feedback_reviewed",
+            label: `success`,
+            value: id,
+          });
           const { data } = response.data;
           // Create a mock feedback for demonstration
           const mockFeedback = {

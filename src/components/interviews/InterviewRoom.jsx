@@ -7,6 +7,9 @@ import {
   stopSpeechRecognition,
   speakText,
 } from "../../utils/speech";
+import { Video } from "lucide-react";
+import VideoRecorder from "./VideoRecorder";
+import { analytics } from "../../helpers/analytics";
 
 const API = import.meta.env.VITE_BACKEND;
 const WS_API = import.meta.env.VITE_WS;
@@ -24,6 +27,7 @@ const InterviewRoom = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [ending, setEnding] = useState(false);
+  const [history, setHistory] = useState([]);
 
   const recognitionRef = useRef(null);
   const timerRef = useRef(null);
@@ -41,13 +45,26 @@ const InterviewRoom = () => {
         setLoading(false);
         startTimer();
         recognitionRef.current = initSpeechRecognition();
+        analytics.event({
+          category: "Interview",
+          action: "start_interview",
+          label: `success`,
+          value: id,
+        });
       };
 
       socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
 
         if (data.type === "interview_ended") {
+          analytics.event({
+            category: "Interview",
+            action: "end_interview",
+            label: `by_system`,
+            value: id,
+          });
           toast.success("Interview ended! Redirecting to feedback...");
+
           navigate(data.redirect, { replace: true });
           return;
         }
@@ -139,6 +156,11 @@ const InterviewRoom = () => {
         answer: transcript.trim(),
       })
     );
+    const lastQuestion = {
+      question: currentQuestion,
+      answer: transcript.trim(),
+    };
+    setHistory((h) => [...h, lastQuestion]);
 
     setTranscript("");
     setSubmitting(false);
@@ -148,6 +170,12 @@ const InterviewRoom = () => {
     if (!socketRef.current) return;
 
     setEnding(true);
+    analytics.event({
+      category: "Interview",
+      action: "end_interview",
+      label: `by_user`,
+      value: id,
+    });
 
     // Stop timer and recognition
     if (timerRef.current) clearInterval(timerRef.current);
@@ -162,7 +190,7 @@ const InterviewRoom = () => {
         type: "end_interview",
       })
     );
-    navigate(`/feedback/${id}`, { replace: true, state:{lazyload: true} });
+    navigate(`/feedback/${id}`, { replace: true, state: { lazyload: true } });
   };
 
   if (loading) {
@@ -248,11 +276,45 @@ const InterviewRoom = () => {
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           {/* Conversation Area */}
-          <div className="sathi-card h-fit mb-6 flex flex-col">
-            <div className="flex-1 overflow-y-auto p-4">
+          <section className="sathi-card h-fit mb-6 flex flex-col">
+            <div className="flex-1 max-h-[45vh]  overflow-y-scroll p-4">
               <div className="space-y-4">
+                {history.length >= 1 &&
+                  history.map(({ question, answer }, key) => (
+                    <>
+                      <section
+                        key={"Q_" + key}
+                        className="flex gap-3 items-start"
+                      >
+                        <div className="h-8 w-8 rounded-full bg-sathi-primary flex items-center justify-center text-white text-xs">
+                          AI
+                        </div>
+                        <div
+                          className="bg-gray-100 p-3 max-w-[80%]"
+                          style={{ borderRadius: "0px 8px 8px 8px" }}
+                        >
+                          <p className="text-sm text-gray-800">{question}</p>
+                        </div>
+                      </section>
+                      <section
+                        key={"A_" + key}
+                        className="flex items-end gap-3 justify-end"
+                      >
+                        <div
+                          className="bg-gray-100 p-3 max-w-[80%]"
+                          style={{ borderRadius: "8px 8px 0px 8px" }}
+                        >
+                          <p className="text-sm text-gray-800">{answer}</p>
+                        </div>
+                        <div className="h-8 w-8 rounded-full bg-sathi-primary flex items-center justify-center text-white text-xs">
+                          You
+                        </div>
+                      </section>
+                      <section className="my-6 w-8/12 mx-auto justify-center rounded-full h-[2px] bg-gray-100"></section>
+                    </>
+                  ))}
                 {/* AI Question */}
-                <div className="flex gap-3 items-start">
+                <section className="flex gap-3 items-start">
                   <div className="h-8 w-8 rounded-full bg-sathi-primary flex items-center justify-center text-white text-xs">
                     AI
                   </div>
@@ -262,10 +324,10 @@ const InterviewRoom = () => {
                   >
                     <p className="text-sm text-gray-800">{currentQuestion}</p>
                   </div>
-                </div>
+                </section>
                 {/* My Answer */}
                 {transcript && (
-                  <div className="flex items-end gap-3 justify-end">
+                  <section className="flex items-end gap-3 justify-end">
                     <div
                       className="bg-gray-100 p-3 max-w-[80%]"
                       style={{ borderRadius: "8px 8px 0px 8px" }}
@@ -275,11 +337,11 @@ const InterviewRoom = () => {
                     <div className="h-8 w-8 rounded-full bg-sathi-primary flex items-center justify-center text-white text-xs">
                       You
                     </div>
-                  </div>
+                  </section>
                 )}
               </div>
             </div>
-          </div>
+          </section>
 
           {/* Interview Tips */}
           <div className="sathi-card">
@@ -308,38 +370,16 @@ const InterviewRoom = () => {
 
         <div className="lg:col-span-1">
           {/* Video Preview */}
-          <div className="sathi-card h-[300px] relative mb-6 flex items-center justify-center overflow-hidden">
-            {/* <video
-              id="userVideo"
-              className="h-full w-full object-cover"
-              autoPlay
-              muted
-              playsInline
-            ></video> */}
-
-            {/* Camera placeholder - switch to real camera when implemented */}
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
-              <div className="text-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-12 w-12 mx-auto text-white opacity-60"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1}
-                    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-                  />
-                </svg>
-                <p className="mt-2 text-white text-sm">Camera Preview</p>
-              </div>
-            </div>
-            {/* Controls Area */}
+          <div
+            className="sathi-card flex justify-center items-center p-[1px]"
+            style={{ borderRadius: "9px 9px 0px 0px" }}
+          >
+            <VideoRecorder />
           </div>
-          <div className="sathi-card p-4">
+          <div
+            className="sathi-card p-4"
+            style={{ borderRadius: "0px 0px 9px 9px" }}
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <button
@@ -373,9 +413,7 @@ const InterviewRoom = () => {
 
               <button
                 onClick={handleSubmitResponse}
-                disabled={
-                  !transcript.trim() || submitting || isSpeaking
-                }
+                disabled={!transcript.trim() || submitting || isSpeaking}
                 className="sathi-btn-primary px-6 disabled:opacity-50"
               >
                 {submitting ? (

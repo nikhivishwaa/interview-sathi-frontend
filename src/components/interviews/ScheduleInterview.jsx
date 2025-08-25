@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "../../context/AuthContext";
 import CustomModal from "../modals/CustomModal";
 import { useInterview } from "../../context/InterviewContext";
 import axios from "axios";
+import { analytics } from "../../helpers/analytics";
 
 const API = import.meta.env.VITE_BACKEND;
 const ScheduleInterview = () => {
@@ -18,6 +19,14 @@ const ScheduleInterview = () => {
   const navigate = useNavigate();
   const { token } = useAuth();
   const { resumes, interview, setInterview } = useInterview();
+
+  useEffect(() => {
+    analytics.event({
+      category: "Interview",
+      action: "schedule_attempted",
+      label: "open_scheduler",
+    });
+  }, []);
 
   // Calculate min date (today)
   const today = new Date();
@@ -86,6 +95,13 @@ const ScheduleInterview = () => {
         console.log({ data: response.data });
         toast.success("Interview Scheduled Successfully");
         setInterview([...interview, response.data?.data]);
+
+        analytics.event({
+          category: "Interview",
+          action: "interview_scheduled",
+          label: jobRole,
+          value: response.data?.data?.id,
+        });
       }
     } catch (error) {
       console.error("Error scheduling interview:", error);
